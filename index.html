@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The Wedding Invitation of Fahnas & Bahja</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;1,400&family=Pinyon+Script&display=swap');
+
+        :root {
+            --primary-dark: #122417; 
+            --accent-gold: #C5A059;  
+            --bg-cream: #FAF6F0;     
+            --card-ivory: #FFFFFF;
+        }
+
+        html, body {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            font-family: 'Lora', serif;
+            background-color: #000000;
+            color: var(--primary-dark);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* CINEMATIC SPLIT OVERLAY COVER */
+        .cover-door-wrapper {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100dvh;
+            display: flex; z-index: 1000;
+            pointer-events: auto;
+        }
+        .cover-door-wrapper.hidden {
+            pointer-events: none;
+            display: none;
+        }
+
+        .door {
+            width: 50%; height: 100%;
+            background: linear-gradient(135deg, #0a0e0b 0%, #000000 100%);
+            transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .door::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 200%; height: 100%;
+            background: radial-gradient(circle, rgba(197, 160, 89, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .door-left {
+            border-right: 1px solid rgba(197, 160, 89, 0.2);
+        }
+        .door-right {
+            border-left: 1px solid rgba(197, 160, 89, 0.2);
+        }
+        .door-left::after { left: 0; }
+        .door-right::after { left: -100%; }
+
+        .cover-door-wrapper.open .door-left { transform: translateX(-100%); }
+        .cover-door-wrapper.open .door-right { transform: translateX(100%); }
+
+        .cover-content-center {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 1002;
+            width: 100%; max-width: 450px;
+            box-sizing: border-box;
+            padding: 30px;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .cover-door-wrapper.open .cover-content-center {
+            opacity: 0;
+            transform: translate(-50%, -60%);
+        }
+
+        .monogram {
+            font-family: 'Pinyon Script', cursive;
+            font-size: 6rem; color: var(--accent-gold);
+            margin: 0 0 15px 0; line-height: 1;
+            text-shadow: 0 0 15px rgba(197,160,89,0.2);
+        }
+
+        .cover-title {
+            font-family: 'Cinzel', serif;
+            color: #FAF6F0; font-size: 0.85rem;
+            letter-spacing: 7px; text-transform: uppercase;
+            margin: 10px 0 35px 0;
+        }
+
+        .cover-names {
+            font-family: 'Cinzel', serif; color: var(--accent-gold);
+            font-size: 2.2rem; letter-spacing: 4px;
+            text-transform: uppercase; margin: 0;
+        }
+
+        .cover-and {
+            font-family: 'Pinyon Script', cursive;
+            font-size: 3rem; color: #FAF6F0;
+            display: block; margin: -5px 0;
+        }
+
+        .open-btn {
+            font-family: 'Cinzel', serif;
+            background: linear-gradient(90deg, #A67C41, #FAF6F0, #A67C41);
+            background-size: 200% auto;
+            color: var(--primary-dark);
+            border: none;
+            padding: 15px 45px;
+            font-size: 0.75rem; letter-spacing: 3px;
+            text-transform: uppercase; cursor: pointer;
+            margin-top: 50px; font-weight: 700;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: shimmerEffect 3s infinite linear;
+            transition: transform 0.2s;
+        }
+        .open-btn:hover { transform: scale(1.03); }
+
+        @keyframes shimmerEffect {
+            to { background-position: 200% center; }
+        }
+
+        /* SCROLLABLE INTERIOR BACKGROUND - TRUE BLACK */
+        .wrapper {
+            width: 100%; 
+            height: 100dvh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            box-sizing: border-box;
+            border: 12px solid #000000;
+            position: relative;
+            
+            background-color: #000000;
+            background-image: 
+                radial-gradient(circle at 50% 30%, rgba(20, 20, 20, 0.95) 0%, #000000 80%),
+                radial-gradient(circle at 0% 0%, rgba(197, 160, 89, 0.08) 0%, transparent 45%),
+                radial-gradient(circle at 100% 100%, rgba(197, 160, 89, 0.08) 0%, transparent 50%),
+                linear-gradient(rgba(197, 160, 89, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(197, 160, 89, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+        }
+
+        /* HIGH PERFORMANCE CANVAS POPPER SYSTEM OVERLAYING THE CARDS */
+        #popper-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 20; /* Brought to the absolute top layer to cross into slides */
+        }
+
+        /* SECTION VIEWPORTS */
+        .main-card-section {
+            min-height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 10;
+        }
+
+        .card-shimmer-border {
+            padding: 3px;
+            background: linear-gradient(135deg, #A67C41 0%, #FAF6F0 50%, #C5A059 100%);
+            background-size: 300% 300%;
+            animation: borderGlow 6s ease infinite alternate;
+            border-radius: 6px;
+            max-width: 440px; width: 100%;
+            box-shadow: 0 40px 90px rgba(0, 0, 0, 0.8);
+            opacity: 0; transform: scale(0.95);
+            transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        @keyframes borderGlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .invitation-card {
+            background: var(--card-ivory);
+            padding: 45px 25px;
+            box-sizing: border-box; text-align: center;
+            position: relative; border-radius: 4px;
+        }
+
+        .invitation-card::before {
+            content: ""; position: absolute;
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 1px solid rgba(197, 160, 89, 0.25); pointer-events: none;
+        }
+
+        .cover-door-wrapper.open + .wrapper .card-shimmer-border {
+            opacity: 1; transform: scale(1);
+        }
+
+        .bismillah {
+            font-size: 1.6rem; letter-spacing: 1px; margin-bottom: 8px; font-weight: 600;
+            opacity: 0; transform: translateY(-10px);
+        }
+        .blessing-text { 
+            font-family: 'Cinzel', serif; font-size: 0.72rem; 
+            letter-spacing: 3px; text-transform: uppercase;
+            margin: 0 0 20px 0; color: var(--accent-gold); font-weight: 600;
+            opacity: 0; transform: translateY(-10px);
+        }
+
+        .ornament-divider {
+            width: 60px; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+            margin: 20px auto; position: relative; opacity: 0;
+        }
+        .ornament-divider::before {
+            content: "♦"; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.7);
+            color: var(--accent-gold); background: var(--card-ivory); padding: 0 6px;
+        }
+
+        .cover-door-wrapper.open + .wrapper .bismillah { animation: fadeDrop 0.8s 0.6s forwards; }
+        .cover-door-wrapper.open + .wrapper .blessing-text { animation: fadeDrop 0.8s 0.7s forwards; }
+        .cover-door-wrapper.open + .wrapper .sub-invite { animation: fadeDrop 0.8s 0.8s forwards; }
+        .cover-door-wrapper.open + .wrapper .ornament-divider { animation: scaleIn 0.8s 0.9s forwards; }
+
+        @keyframes fadeDrop { to { opacity: 1; transform: translateY(0); } }
+
+        .sub-invite {
+            font-family: 'Cinzel', serif; letter-spacing: 1.5px; 
+            text-transform: uppercase; font-size: 0.68rem; 
+            color: #55665A; line-height: 1.7; margin: 0 auto;
+            max-width: 340px; font-weight: 500; opacity: 0; transform: translateY(-10px);
+        }
+
+        /* DROP SHADOW EFFECTS */
+        .groom-name {
+            font-family: 'Pinyon Script', cursive; font-size: 5.2rem; 
+            margin: 0; font-weight: 400; color: var(--primary-dark); line-height: 0.9;
+            opacity: 0; transform: translateX(-30px);
+            text-shadow: 2px 4px 5px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(255,255,255,0.3);
+        }
+        .bride-name {
+            font-family: 'Pinyon Script', cursive; font-size: 5.2rem; 
+            margin: 0; font-weight: 400; color: var(--primary-dark); line-height: 0.9;
+            opacity: 0; transform: translateX(30px);
+            text-shadow: 2px 4px 5px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(255,255,255,0.3);
+        }
+        .and-sign {
+            font-family: 'Pinyon Script', cursive; font-size: 3rem;
+            color: var(--accent-gold); display: block; margin: 2px 0;
+            opacity: 0; transform: scale(0.5);
+        }
+
+        .cover-door-wrapper.open + .wrapper .groom-name { animation: slideInX 1s 1.0s forwards cubic-bezier(0.25, 1, 0.5, 1); }
+        .cover-door-wrapper.open + .wrapper .and-sign { animation: scaleIn 0.8s 1.2s forwards; }
+        .cover-door-wrapper.open + .wrapper .bride-name { animation: slideInX 1s 1.3s forwards cubic-bezier(0.25, 1, 0.5, 1); }
+
+        @keyframes slideInX { to { opacity: 1; transform: translateX(0); } }
+        @keyframes scaleIn { to { opacity: 1; transform: scale(1); } }
+
+        .date-container {
+            font-family: 'Cinzel', serif; display: flex;
+            align-items: center; justify-content: center;
+            gap: 15px; margin: 30px 0 12px 0;
+            text-transform: uppercase; letter-spacing: 3px;
+            font-size: 1rem; font-weight: 500; opacity: 0;
+        }
+        .date-side { font-size: 0.8rem; color: #7A8E83; }
+        .date-main {
+            font-size: 2.6rem; font-weight: 600;
+            border-left: 1px solid rgba(197,160,89,0.3);
+            border-right: 1px solid rgba(197,160,89,0.3);
+            padding: 0 22px; color: var(--accent-gold); line-height: 1;
+        }
+
+        .time-block {
+            font-family: 'Cinzel', serif; font-size: 0.8rem;
+            letter-spacing: 2px; text-transform: uppercase;
+            margin-bottom: 30px; color: var(--primary-dark); font-weight: 600; opacity: 0;
+        }
+
+        .cover-door-wrapper.open + .wrapper .date-container { animation: scaleIn 0.8s 1.5s forwards; }
+        .cover-door-wrapper.open + .wrapper .time-block { animation: scaleIn 0.8s 1.6s forwards; }
+        .cover-door-wrapper.open + .wrapper .btn { animation: scaleIn 0.8s 1.7s forwards; }
+        .cover-door-wrapper.open + .wrapper .scroll-indicator { animation: fadeDrop 1s 2.0s forwards; }
+
+        .btn {
+            font-family: 'Cinzel', serif;
+            background-color: var(--primary-dark); color: #FAF6F0;
+            padding: 14px 40px; font-weight: 600;
+            letter-spacing: 2px; text-transform: uppercase; font-size: 0.75rem;
+            border: 1px solid var(--primary-dark); cursor: pointer;
+            display: inline-block; opacity: 0; transition: all 0.3s ease;
+        }
+        .btn:hover { background-color: var(--accent-gold); border-color: var(--accent-gold); color: var(--primary-dark); }
+
+        .scroll-indicator {
+            margin-top: 35px; opacity: 0; font-family: 'Cinzel', serif;
+            font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase;
+            color: var(--accent-gold); cursor: pointer; animation: pulseArrow 2s infinite ease-in-out;
+        }
+        @keyframes pulseArrow {
+            0%, 100% { transform: translateY(0); opacity: 0.6; }
+            50% { transform: translateY(6px); opacity: 1; }
+        }
+
+        /* COUNTDOWN SECTION */
+        .countdown-section {
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 20px;
+            box-sizing: border-box;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            position: relative;
+            z-index: 10;
+        }
+
+        .countdown-section::before {
+            content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 1px; height: 60px; background: linear-gradient(to bottom, var(--accent-gold), transparent);
+        }
+
+        /* GOLD METALLIC TEXT COLOUR TREATMENT */
+        .countdown-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem; letter-spacing: 5px;
+            text-transform: uppercase; 
+            margin-bottom: 40px; text-align: center; font-weight: 600;
+            background: linear-gradient(120deg, #A67C41 0%, #F5E2C4 40%, #C5A059 70%, #A67C41 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 10px rgba(197, 160, 89, 0.15);
+        }
+
+        .timer-container {
+            display: flex; gap: 15px; justify-content: center; align-items: center;
+            flex-wrap: wrap; max-width: 460px; width: 100%;
+        }
+
+        .timer-pod {
+            background: var(--card-ivory);
+            border: 1px solid rgba(197, 160, 89, 0.4);
+            border-radius: 4px;
+            min-width: 80px; padding: 18px 10px;
+            text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
+        }
+        .timer-pod:hover { transform: translateY(-4px); border-color: var(--accent-gold); }
+
+        .timer-num {
+            font-family: 'Cinzel', serif; font-size: 2rem;
+            font-weight: 600; color: var(--accent-gold);
+            line-height: 1; margin-bottom: 5px;
+        }
+        .timer-label {
+            font-family: 'Cinzel', serif; font-size: 0.6rem;
+            letter-spacing: 2px; text-transform: uppercase; color: #7A8E83;
+        }
+
+        /* LOCATION OVERLAY SCREEN */
+        .location-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.98); 
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1010; opacity: 0; pointer-events: none;
+            transition: opacity 0.4s ease; padding: 20px; box-sizing: border-box;
+        }
+        .location-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .venue-card {
+            background: var(--card-ivory); padding: 45px 30px;
+            border: 1px solid var(--accent-gold); max-width: 400px; width: 100%;
+            box-sizing: border-box; text-align: center; position: relative;
+            transform: scale(0.93); transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+        }
+        .location-overlay.active .venue-card { transform: scale(1); }
+        .venue-card::before {
+            content: ""; position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 1px solid rgba(197, 160, 89, 0.25); pointer-events: none;
+        }
+
+        .badge {
+            font-family: 'Cinzel', serif; color: var(--accent-gold);
+            font-weight: 600; text-transform: uppercase; letter-spacing: 3px;
+            font-size: 0.75rem; margin-bottom: 10px; display: block;
+        }
+        .venue-card h3 { font-family: 'Cinzel', serif; margin: 0 0 20px 0; font-size: 2.2rem; font-weight: 500; letter-spacing: 1px; color: var(--primary-dark); }
+        .details-text { font-size: 0.95rem; line-height: 1.8; margin: 6px 0; letter-spacing: 0.5px; }
+        .note { font-size: 0.95rem; color: #55665A; margin: 25px 0; font-style: italic; line-height: 1.6; }
+
+        .maps-link {
+            font-family: 'Cinzel', serif; display: inline-block;
+            background-color: var(--primary-dark); color: white; text-decoration: none;
+            font-weight: 600; font-size: 0.75rem; padding: 12px 28px; border: 1px solid var(--primary-dark);
+            transition: all 0.2s ease; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px;
+        }
+        .maps-link:hover { background-color: var(--accent-gold); color: var(--primary-dark); border-color: var(--accent-gold); }
+        .close-btn { font-family: 'Cinzel', serif; background: transparent; border: none; color: #7A8E83; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; display: block; margin: 0 auto; font-weight: 600; }
+        .close-btn:hover { color: #C5A059; }
+    </style>
+</head>
+<body>
+
+    <!-- KINETIC DOOR OPENING REVELATION OVERLAY -->
+    <div class="cover-door-wrapper" id="doorOverlay">
+        <div class="door door-left"></div>
+        <div class="door door-right"></div>
+
+        <div class="cover-content-center">
+            <div class="monogram">F&B</div>
+            <p class="cover-title">Wedding Invitation</p>
+            
+            <div class="cover-names">Fahnas</div>
+            <span class="cover-and">and</span>
+            <div class="cover-names">Bahja</div>
+            
+            <button class="open-btn" onclick="openInvitation()">Open Invitation</button>
+        </div>
+    </div>
+
+    <!-- MAIN INTERIOR EXPERIENCE -->
+    <div class="wrapper" id="scrollWrapper">
+        
+        <!-- Canvas Layer for Celebration Poppers -->
+        <canvas id="popper-canvas"></canvas>
+        
+        <!-- SECTION 1: INVITATION MAIN CARD CONTAINER -->
+        <div class="main-card-section">
+            <div class="card-shimmer-border">
+                <div class="invitation-card">
+                    <div class="card-content">
+                        <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+                        <p class="blessing-text">In the name of Allah, the Most Beneficent, the Most Merciful</p>
+                        
+                        <p class="sub-invite">We, along with our families, warmly invite you to share in our joy as we celebrate the Nikah ceremony of</p>
+                        
+                        <div class="ornament-divider"></div>
+
+                        <h1 class="groom-name">Fahnas</h1>
+                        <span class="and-sign">and</span>
+                        <h1 class="bride-name">Bahja</h1>
+                        
+                        <div class="ornament-divider"></div>
+
+                        <p style="font-style: italic; font-size: 0.92rem; color: #55665A; margin: 15px auto; max-width: 320px;">
+                            Please join us on this blessed occasion to shower your valuable presence and Duas upon us.
+                        </p>
+
+                        <div class="date-container">
+                            <div class="date-side">August</div>
+                            <div class="date-main">2</div>
+                            <div class="date-side">Sunday</div>
+                        </div>
+                        
+                        <div class="time-block">
+                            11:00 AM – 3:00 PM
+                        </div>
+
+                        <button class="btn" onclick="toggleLocation(true)">View Venue & Route</button>
+
+                        <div class="scroll-indicator" onclick="scrollToCountdown()">
+                            <div>Scroll Down</div>
+                            <div style="font-size:0.9rem; margin-top:-2px;">↓</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: COUNTDOWN COMPONENT MODULE -->
+        <div class="countdown-section" id="countdown-section">
+            <h2 class="countdown-title">Counting Down To The Big Day</h2>
+            <div class="timer-container">
+                <div class="timer-pod"><div class="timer-num" id="days">00</div><div class="timer-label">Days</div></div>
+                <div class="timer-pod"><div class="timer-num" id="hours">00</div><div class="timer-label">Hrs</div></div>
+                <div class="timer-pod"><div class="timer-num" id="minutes">00</div><div class="timer-label">Min</div></div>
+                <div class="timer-pod"><div class="timer-num" id="seconds">00</div><div class="timer-label">Sec</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOCATION POPUP MODULE -->
+    <div class="location-overlay" id="locationPage">
+        <div class="venue-card">
+            <span class="badge">The Venue Location</span>
+            <h3>Emerald Palace</h3>
+            
+            <p class="details-text">Kurukkol Kunnu, Vailathur, Tirur</p>
+            <p class="details-text"><strong>Feast Timings:</strong> 11:00 AM to 3:00 PM</p>
+            
+            <p class="note">"May Allah bless you, and surround you with blessings, and bring you both together in total goodness and harmony."</p>
+            
+            <a class="maps-link" href="https://maps.app.goo.gl/TxEy1E2fggaFLNVaA" target="_blank">📍 Open in Google Maps</a>
+            
+            <button class="close-btn" onclick="toggleLocation(false)">✕ Return to Invitation</button>
+        </div>
+    </div>
+
+    <script>
+        function openInvitation() {
+            const wrapper = document.getElementById('doorOverlay');
+            wrapper.classList.add('open');
+            
+            // Fire celebration popper bursts exactly when doors slide
+            setTimeout(() => {
+                initPoppers();
+            }, 400);
+            
+            setTimeout(() => {
+                wrapper.classList.add('hidden');
+            }, 1200);
+        }
+
+        function toggleLocation(show) {
+            const overlay = document.getElementById('locationPage');
+            if (show) {
+                overlay.classList.add('active');
+            } else {
+                overlay.classList.remove('active');
+            }
+        }
+
+        function scrollToCountdown() {
+            document.getElementById('countdown-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // LIVE COUNTDOWN LOGIC
+        const targetWeddingDate = new Date("August 2, 2026 11:00:00").getTime();
+
+        const countdownEngine = setInterval(function() {
+            const currentMoment = new Date().getTime();
+            const timeWindowRemaining = targetWeddingDate - currentMoment;
+
+            if (timeWindowRemaining > 0) {
+                const days = Math.floor(timeWindowRemaining / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeWindowRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeWindowRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeWindowRemaining % (1000 * 60)) / 1000);
+
+                document.getElementById("days").innerText = days < 10 ? "0" + days : days;
+                document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
+                document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
+                document.getElementById("seconds").innerText = seconds < 10 ? "0" + seconds : seconds;
+            } else {
+                clearInterval(countdownEngine);
+                document.getElementById("countdown-section").innerHTML = "<h2 class='countdown-title' style='color:#C5A059;'>The Blessed Day Has Arrived! ✨</h2>";
+            }
+        }, 1000);
+
+        // NATIVE CANVAS CELEBRATION POPPER ENGINE
+        function initPoppers() {
+            const canvas = document.getElementById("popper-canvas");
+            const ctx = canvas.getContext("2d");
+            
+            // Handle canvas dynamic scaling metrics
+            let width = canvas.width = canvas.offsetWidth;
+            let height = canvas.height = canvas.offsetHeight;
+            
+            window.addEventListener('resize', () => {
+                width = canvas.width = canvas.offsetWidth;
+                height = canvas.height = canvas.offsetHeight;
+            });
+
+            const colors = ["#C5A059", "#E6C687", "#A67C41", "#FAF6F0", "#34543A"];
+            const particles = [];
+
+            class ConfettiParticle {
+                constructor() {
+                    this.x = width / 2;
+                    this.y = height + 20; // Bottom spawn point
+                    this.size = Math.random() * 6 + 4;
+                    // Upward explosion vector speeds
+                    this.speedX = (Math.random() - 0.5) * 12;
+                    this.speedY = -Math.random() * 14 - 10;
+                    this.gravity = 0.35;
+                    this.drag = 0.97;
+                    this.color = colors[Math.floor(Math.random() * colors.length)];
+                    this.rotation = Math.random() * 360;
+                    this.rotationSpeed = (Math.random() - 0.5) * 10;
+                }
+                update() {
+                    this.speedX *= this.drag;
+                    this.speedY += this.gravity;
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    this.rotation += this.rotationSpeed;
+                }
+                draw() {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.rotation * Math.PI / 180);
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+
+            // Populate burst arrays - Expanded to 150 particles for a richer burst across layers
+            for (let i = 0; i < 150; i++) {
+                particles.push(new ConfettiParticle());
+            }
+
+            function animatePoppers() {
+                ctx.clearRect(0, 0, width, height);
+                
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    particles[i].update();
+                    particles[i].draw();
+                    
+                    // Cleanup fragments fallen offscreen
+                    if (particles[i].y > height + 50) {
+                        particles.splice(i, 1);
+                    }
+                }
+                
+                if (particles.length > 0) {
+                    requestAnimationFrame(animatePoppers);
+                }
+            }
+            
+            animatePoppers();
+        }
+    </script>
+
+</body>
+</html>
